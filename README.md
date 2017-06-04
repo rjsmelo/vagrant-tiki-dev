@@ -8,7 +8,7 @@
 
 ### Usage
 
-* Clone this repo
+* Clone this repo to your disk
 * Do ```vagrant up```
 * You can check the box IP after boot by issuing ```vagrant ssh -c ifconfig```
 * The base folder of this repo will be shared as ```/vagrant``` inside the box
@@ -35,3 +35,14 @@ That way you can repeat for ```17.x```, ```16.x```, etc.
 
 You need a working copy of  [VirtualBox](https://www.virtualbox.org/) and [Vagrant](https://www.vagrantup.com/)
 
+### Contributions
+
+If you find any problem, or want to contribute/extend this repo, just:
+
+* Clone the repo on GitHub
+* Make your changes on your copy
+* Submit a Pull Request
+
+I'll do my best to review and apply your contribution.
+
+Thank you!
