@@ -37,6 +37,7 @@ Vagrant.configure(2) do |config|
         mysql-server mysql-client \
         openjdk-8-jre-headless elasticsearch
 
+    a2enmod rewrite
     a2enmod proxy
     a2enmod proxy_fcgi
     a2enconf php7.0-fpm
