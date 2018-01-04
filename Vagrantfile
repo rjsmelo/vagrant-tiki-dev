@@ -42,6 +42,9 @@ Vagrant.configure(2) do |config|
     a2enmod proxy_fcgi
     a2enconf php7.0-fpm
 
+    printf '<Directory /var/www/html>\nAllowOverride All\n</Directory>\n' >  /etc/apache2/conf-available/override.conf
+    a2enconf override
+
     systemctl enable elasticsearch.service
 
     #
