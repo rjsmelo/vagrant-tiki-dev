@@ -10,6 +10,10 @@ Vagrant.configure(2) do |config|
 
   # Remove comment to disable automatic box update checking
   # config.vm.box_check_update = false
+  config.vm.provider :virtualbox do |v|
+    v.customize ["modifyvm", :id, "--memory", 2048] # 2G
+    # v.customize ["modifyvm", :id, "--memory", 4086] # 4G
+  end
 
   # Create a private network, which allows host-only access to the machine
   # using DHCP
@@ -26,21 +30,29 @@ Vagrant.configure(2) do |config|
 
     export DEBIAN_FRONTEND=noninteractive
 
+    apt-get update -y
+
+    apt-get install -y software-properties-common
+    add-apt-repository -y ppa:ondrej/php
+
     # Add Elasticsearch Repo for version 2.x
     wget -qO - https://packages.elastic.co/GPG-KEY-elasticsearch | apt-key add -
-    echo "deb https://artifacts.elastic.co/packages/2.x/apt stable main" > /etc/apt/sources.list.d/elasticsearch-2.x.list
+    # echo "deb https://artifacts.elastic.co/packages/2.x/apt stable main" > /etc/apt/sources.list.d/elasticsearch-2.x.list
+    echo "deb https://artifacts.elastic.co/packages/5.x/apt stable main" | sudo tee -a /etc/apt/sources.list.d/elastic-5.x.list
 
     apt-get update -y
     apt-get install -y \
-        php7.0 php7.0-mysql php7.0-xml php7.0-zip php7.0-curl php7.0-gd php7.0-mbstring php7.0-mcrypt \
+        php7.1-cli php7.1-fpm php7.1-mysql php7.1-xml php7.1-zip php7.1-curl php7.1-gd php7.1-mbstring php7.1-mcrypt \
+	php7.1-sqlite3 sqlite3 \
         apache2 \
         mysql-server mysql-client \
         openjdk-8-jre-headless elasticsearch
 
+    a2dismod php7.1
     a2enmod rewrite
     a2enmod proxy
     a2enmod proxy_fcgi
-    a2enconf php7.0-fpm
+    a2enconf php7.1-fpm
 
     printf '<Directory /var/www/html>\nAllowOverride All\n</Directory>\n' >  /etc/apache2/conf-available/override.conf
     a2enconf override
@@ -61,12 +73,12 @@ Vagrant.configure(2) do |config|
         echo '; priority=99'
         echo 'date.timezone = "UTC"'
         echo 'xdebug.remote_enable=1'
-    ) > /etc/php/7.0/mods-available/local.ini
+    ) > /etc/php/7.1/mods-available/local.ini
     phpenmod local
-    sed -i 's/^display_errors.*$/display_errors = On/' /etc/php/7.0/fpm/php.ini
-    sed -i 's/^display_startup_errors.*$/display_startup_errors = On/' /etc/php/7.0/fpm/php.ini
-    sed -i 's/^display_errors.*$/display_errors = On/' /etc/php/7.0/cli/php.ini
-    sed -i 's/^display_startup_errors.*$/display_startup_errors = On/' /etc/php/7.0/cli/php.ini
+    sed -i 's/^display_errors.*$/display_errors = On/' /etc/php/7.1/fpm/php.ini
+    sed -i 's/^display_startup_errors.*$/display_startup_errors = On/' /etc/php/7.1/fpm/php.ini
+    sed -i 's/^display_errors.*$/display_errors = On/' /etc/php/7.1/cli/php.ini
+    sed -i 's/^display_startup_errors.*$/display_startup_errors = On/' /etc/php/7.1/cli/php.ini
 
     # Configure Mysql
     sed -i 's/bind-address.*$/bind-address = 0.0.0.0/' /etc/mysql/mysql.conf.d/mysqld.cnf
@@ -93,7 +105,7 @@ Vagrant.configure(2) do |config|
     # ~Dev Settings
     #
 
-    service php7.0-fpm restart
+    service php7.1-fpm restart
     service apache2 restart
     service mysql restart
     systemctl start elasticsearch.service
